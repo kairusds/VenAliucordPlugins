@@ -13,7 +13,7 @@ buildscript {
             exclude("com.github.js6pak", "jadb")
         }
         classpath("com.aliucord:jadb:1.2.1-SNAPSHOT")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
     }
 }
 

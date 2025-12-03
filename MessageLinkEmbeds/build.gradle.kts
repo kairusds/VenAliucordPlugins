@@ -1,8 +1,11 @@
-version = "1.4.5"
+version = "1.5.0"
 description = "Embeds message links"
 
 aliucord.changelog.set(
     """
+    # 1.5.0
+    * Add support for forwarded messages
+    
     # 1.4.4 & 1.4.5
     * Fix for new Discord versions
     
