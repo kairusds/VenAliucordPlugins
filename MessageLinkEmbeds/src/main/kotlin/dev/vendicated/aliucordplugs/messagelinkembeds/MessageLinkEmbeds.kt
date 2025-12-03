@@ -228,15 +228,9 @@ class MessageLinkEmbeds : Plugin() {
             ), Hook { param ->
                 val msg = (param.args[1] as MessageEntry).message
                 if (msg.isLoading || msg.hasFlag(MessageFlags.SUPPRESS_EMBEDS)) return@Hook
-                val matcher = messageLinkPattern.matcher(msg.content ?: return@Hook)
-                while (matcher.find()) {
-                    val url = matcher.group()
-                    if (msg.embeds.any { it.url == url }) continue
-                    val channelIdStr = matcher.group(2)!!
-                    val messageIdStr = matcher.group(3)!!
-                    val channelId = channelIdStr.toLong()
-                    val messageId = messageIdStr.toLong()
 
+                fun processLink(channelId: Long, messageId: Long, url: String) {
+                    if (msg.embeds.any { it.url == url }) return
 
                     val m = cache[messageId] ?: StoreStream.getMessages()
                         .getMessage(channelId, messageId)
@@ -244,10 +238,10 @@ class MessageLinkEmbeds : Plugin() {
                         addEmbed(msg, m, url, messageId, channelId)
                     } else {
                         if (!PermissionUtils.INSTANCE.hasAccess(
-                                StoreStream.getChannels().getChannel(channelId) ?: return@Hook,
+                                StoreStream.getChannels().getChannel(channelId) ?: return,
                                 StoreStream.getPermissions().permissionsByChannel[channelId]
                             )
-                        ) return@Hook
+                        ) return
 
                         worker.execute {
                             RestAPI.api.getChannelMessagesAround(channelId, 1, messageId).subscribe {
@@ -259,6 +253,30 @@ class MessageLinkEmbeds : Plugin() {
                                 }
                             }
                         }
+                    }
+                }
+
+                val content = msg.content ?: "" 
+                val matcher = messageLinkPattern.matcher(content)
+                while (matcher.find()) {
+                    val url = matcher.group()
+                    val channelId = matcher.group(2)!!.toLong()
+                    val messageId = matcher.group(3)!!.toLong()
+                    processLink(channelId, messageId, url)
+                }
+
+                // flag 16384 (1<<14) might be a forwarded message
+                val isForwarded = msg.messageReference != null && (
+                    (msg.flags and 16384L) != 0L ||
+                    (content.isEmpty() && msg.attachments.isEmpty() && msg.embeds.isEmpty())
+                )
+
+                if (isForwarded) {
+                    val ref = msg.messageReference
+                    if (ref != null && ref.channelId != null && ref.messageId != null) {
+                        val guildPart = ref.guildId?.toString() ?: "@me"
+                        val url = "https://discord.com/channels/$guildPart/${ref.channelId}/${ref.messageId}"
+                        processLink(ref.channelId!!, ref.messageId!!, url)
                     }
                 }
             }
