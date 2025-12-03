@@ -9,10 +9,10 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.13.0")
-        classpath("com.aliucord:gradle:main-SNAPSHOT") {
+        classpath("com.aliucord:gradle:2.2.0") {
             exclude("com.github.js6pak", "jadb")
         }
-        classpath("com.aliucord:jadb:1.2.1-SNAPSHOT")
+        classpath("com.aliucord:jadb:1.2.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
     }
 }
