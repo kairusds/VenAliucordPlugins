@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.13.0")
-        classpath("com.aliucord:gradle:2.2.0") {
+        classpath("com.aliucord:gradle:2.0.0") {
             exclude("com.github.js6pak", "jadb")
         }
         classpath("com.aliucord:jadb:1.2.1")
