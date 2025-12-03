@@ -44,6 +44,7 @@ subprojects {
     }
 
     android {
+        namespace = "dev.vendicated.aliucordplugs.${project.name.lowercase()}"
         compileSdkVersion(30)
 
         defaultConfig {
@@ -83,6 +84,6 @@ subprojects {
     }
 }
 
-task<Delete>("clean") {
-    delete(rootProject.buildDir)
+tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
 }
